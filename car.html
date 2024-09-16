@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>车辆360度旋转示例</title>
+    <style>
+        .concar {
+            position: relative;
+            width: 686px;
+            height: 495px;
+            margin: 0 auto;
+        }
+        .tu .prev, .tu .next {
+            position: absolute;
+            top: 50%;
+            width: 50px;
+            height: 50px;
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            text-align: center;
+            line-height: 50px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .tu .prev { left: 0; transform: translateY(-50%); }
+        .tu .next { right: 0; transform: translateY(-50%); }
+        #canvas {
+            display: block;
+            margin: 0 auto;
+            background-color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="concar">
+        <canvas id="canvas" width="686" height="495"></canvas>
+        <div class="tu">
+            <div class="prev">上一张</div>
+            <div class="next">下一张</div>
+        </div>
+    </div>
+
+    <!-- 引入jQuery库 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- 车辆旋转脚本 -->
+    <script>
+        $(function(){
+            /** @type {HTMLCanvasElement} */
+            var canvas = document.getElementById('canvas');
+            var ctx = canvas.getContext('2d');
+            var img = new Image();
+            var num = 0;
+            var totalFrames = 72; // 总帧数
+            var timer = null;
+            var isDragging = false;
+            var startX, currentX;
+            var frameHeight = 515; // 每帧图像的高度
+            var frameWidth = 686; // 每帧图像的宽度
+
+            // 设置图像源
+            img.src = '../carRotate/car.png'; // 请替换为实际的车辆精灵图（包含72帧的垂直拼接图像）
+
+            img.onload = function() {
+                draw(num);
+
+                // 下一张按钮点击事件
+                $('.next').on('click', function() {
+                    num = (num + 1) % totalFrames;
+                    draw(num);
+                });
+
+                // 上一张按钮点击事件
+                $('.prev').on('click', function() {
+                    num = (num - 1 + totalFrames) % totalFrames;
+                    draw(num);
+                });
+
+                // 处理鼠标拖拽事件
+                $('#canvas').on('mousedown', function(e) {
+                    isDragging = true;
+                    startX = e.screenX;
+                });
+
+                $(document).on('mousemove', function(e) {
+                    if (isDragging) {
+                        currentX = e.screenX;
+                        if (startX - currentX > 10) {
+                            num = (num + 1) % totalFrames;
+                            draw(num);
+                            startX = currentX;
+                        } else if (currentX - startX > 10) {
+                            num = (num - 1 + totalFrames) % totalFrames;
+                            draw(num);
+                            startX = currentX;
+                        }
+                    }
+                }).on('mouseup', function() {
+                    isDragging = false;
+                });
+
+                // 处理触摸事件（移动端）
+                $('#canvas').on('touchstart', function(e) {
+                    isDragging = true;
+                    startX = e.touches[0].pageX;
+                });
+
+                $(document).on('touchmove', function(e) {
+                    if (isDragging) {
+                        currentX = e.touches[0].pageX;
+                        if (startX - currentX > 10) {
+                            num = (num + 1) % totalFrames;
+                            draw(num);
+                            startX = currentX;
+                        } else if (currentX - startX > 10) {
+                            num = (num - 1 + totalFrames) % totalFrames;
+                            draw(num);
+                            startX = currentX;
+                        }
+                    }
+                }).on('touchend', function() {
+                    isDragging = false;
+                });
+            };
+
+            function draw(index) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // 绘制指定帧
+                ctx.drawImage(img, 0, index * frameHeight, frameWidth, frameHeight, 0, 0, canvas.width, canvas.height);
+            }
+        });
+    </script>
+</body>
+</html>
