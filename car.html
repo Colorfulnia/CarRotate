@@ -84,11 +84,11 @@
                 $(document).on('mousemove', function(e) {
                     if (isDragging) {
                         currentX = e.screenX;
-                        if (startX - currentX > 10) {
+                        if (currentX - startX > 10) {
                             num = (num + 1) % totalFrames;
                             draw(num);
                             startX = currentX;
-                        } else if (currentX - startX > 10) {
+                        } else if (startX - currentX > 10) {
                             num = (num - 1 + totalFrames) % totalFrames;
                             draw(num);
                             startX = currentX;
@@ -107,11 +107,11 @@
                 $(document).on('touchmove', function(e) {
                     if (isDragging) {
                         currentX = e.touches[0].pageX;
-                        if (startX - currentX > 10) {
+                        if (currentX - startX > 10) {
                             num = (num + 1) % totalFrames;
                             draw(num);
                             startX = currentX;
-                        } else if (currentX - startX > 10) {
+                        } else if (startX - currentX > 10) {
                             num = (num - 1 + totalFrames) % totalFrames;
                             draw(num);
                             startX = currentX;
